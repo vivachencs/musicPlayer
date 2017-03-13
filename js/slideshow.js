@@ -1,115 +1,132 @@
+var container = e('#id-slideshow')
+var photos = es('#id-slideshow .photo')
 
-var container = e("#id-lunpo")
-var photos = es("#id-lunpo .photo")
+// 图片位置
 var position = [
-{
-	x : -400,
-	y : 0,
-	z : -120,
-},
-{
-	x : -200,
-	y : 0,
-	z : -60,
-},
-{
-	x : 0,
-	y : 0,
-	z : 30,
-},
-{
-	x : 200,
-	y : 0,
-	z : -60,
-},
-{
-	x : 400,
-	y : 0,
-	z : -120,
-}]
-var playLunpoInterval = null
-var nLunpo = 0
+    {
+        x : -400,
+        y : 0,
+        z : -120,
+    },
+    {
+        x : -200,
+        y : 0,
+        z : -60,
+    },
+    {
+        x : 0,
+        y : 0,
+        z : 30,
+    },
+    {
+        x : 200,
+        y : 0,
+        z : -60,
+    },
+    {
+        x : 400,
+        y : 0,
+        z : -120,
+    }
+]
 
-var playLunpo = function() {
-	clearInterval(playLunpoInterval)
-	playLunpoInterval = setInterval(function() {
-		nLunpo = changePos(nLunpo)
-	}, 3000)
+// 定时参数
+var playSlideshowInterval = null
+// 用于确定轮播位置
+var nSlideshow = 0
+
+// 点击更新 播放列表 并播放
+var AddFromSlideshow = function(index) {
+    var addMusic = onlineList[index]
+    for (var i = 0; i < musicList.length; i++) {
+        var music = musicList[i].music
+        if (music === addMusic.music) {
+            cutPlay(musicList[i], i)
+            return
+        }
+    }
+
+    musicList.push(addMusic)
+    updateMusicList()
+    var n = musicList.length - 1
+    cutPlay(addMusic, n)
 }
 
-var stopLunpo = function() {
-	clearInterval(playLunpoInterval)
-}
-
-var changePos = function(nLunpo) {
-	for(var i = 0; i < photos.length; i++) {
-		photos[i].style.transform = `translate3d(${position[nLunpo].x}px, ${position[nLunpo].y}px, ${position[nLunpo].z}px)`
-		nLunpo++
-		nLunpo %= photos.length
-	}
-	nLunpo++
-	nLunpo %= photos.length
-	return nLunpo
-}
-
+// 根据点击对象取得 index
 var indexOf = function(e) {
-	var id = e.id
-	var ids = id.split("-")
+    var id = e.id
+	var ids = id.split('-')
 	var index = parseInt(ids[ids.length - 1])
-	return index
+    return index
 }
+
+// 根据点击对象设置位置
 var setPos = function(e) {
-	var event = e.target
-	var index = indexOf(event)
-	var pos = ((2 - index) + 5) % photos.length
-	log("index", index,"pos", pos)
-	nLunpo = changePos(pos)
-	AddFromLunbo(index)
+    var target = e.target
+    var isPhoto = target.classList.contains('photo')
+    if (isPhoto) {
+        var index = indexOf(target)
+        var pos = ((2 - index) + 5) % photos.length
+        nSlideshow = changePos(pos)
+        AddFromSlideshow(index)
+    }
 }
 
-var initLunpo = function() {
-	container.addEventListener("mouseover",function() {
-		clearInterval(playLunpoInterval)
-
-	})
-	container.addEventListener("mouseout",function() {
-		playLunpo()
-	})
-	container.addEventListener("click", setPos)
+// 改变位置
+var changePos = function(nSlideshow) {
+    for (var i = 0; i < photos.length; i++) {
+        photos[i].style.transform = `translate3d(${position[nSlideshow].x}px, ${position[nSlideshow].y}px, ${position[nSlideshow].z}px)`
+        nSlideshow++
+        nSlideshow %= photos.length
+    }
+    nSlideshow++
+    nSlideshow %= photos.length
+    return nSlideshow
 }
 
-//设置背景
+// 播放图片
+var playSlideshow = function() {
+    clearInterval(playSlideshowInterval)
+    playSlideshowInterval = setInterval(function(){
+        nSlideshow = changePos(nSlideshow)
+    }, 3000)
+}
+
+// 停止播放
+var stopSlideshow = function() {
+    clearInterval(playSlideshowInterval)
+}
+
+// 绑定事件
+var bindSlideshowEvent = function() {
+    container.addEventListener('mouseout', function(){
+        playSlideshow()
+    })
+    container.addEventListener('mouseover', function(){
+        stopSlideshow()
+    })
+    container.addEventListener('click', setPos)
+}
+
+// 设置背景
 var setBackground = function() {
-	var lunpo = e('#id-lunpo')
-	var photos = findAll(lunpo, 'span')
-	for(var i = 0; i < photos.length; i++) {
-		var basePath = 'img/'
-		var music =  onlineList[i]
-		var path = basePath + music.imgPath
-		photos[i].style.backgroundImage = `url(${path})`
-		var a = find(photos[i], 'a')
-		a.innerHTML = `${music.name}--${music.singer}`
-	}
+    var slideshow = e('#id-slideshow')
+    var photos = findAll(slideshow, 'span')
+    for (var i = 0; i < photos.length; i++) {
+        var basePath = 'img/'
+        var music = onlineList[i]
+        var path = basePath + music.imgPath
+        photos[i].style.backgroundImage = `url(${path})`
+        var a = find(photos[i], 'a')
+        a.innerHTML = `${music.name}--${music.singer}`
+    }
 }
 
-//点击更新 播放列表 并播放
-var AddFromLunbo = function(index) {
-	var addMusic = onlineList[index]
-	for(var i = 0; i < musicList.length; i++) {
-		var music = musicList[i].music
-		if(music == addMusic.music) {
-			log('播放列表已存在该歌曲')
-			CutPlay(musicList[i], i)
-			return
-		}
-	}
-	musicList.push(addMusic)
-	UpdateMusicList()
-	var n = musicList.length - 1
-	CutPlay(addMusic, n)
+var __slideshowMain = function() {
+    setBackground()
+    bindSlideshowEvent()
+    playSlideshow()
+    nSlideshow = changePos(nSlideshow)
 }
 
-initLunpo()
-playLunpo()
-setBackground()
-nLunpo = changePos(nLunpo)
+__slideshowMain()
