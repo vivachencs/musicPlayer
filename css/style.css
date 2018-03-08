@@ -310,7 +310,7 @@ main {
     width: 58%;
 }
 
-.music-info-title .music-duration,.music-info .music-duration{
+.music-info-title .music-duration-time,.music-info .music-duration-time{
     width: 8%;
 }
 
@@ -385,7 +385,7 @@ footer {
     left: 0%;
 }
 
-#id-current-time, #id-duration {
+#id-current-time, #id-duration-time {
     display: inline-block;
     width: 50px;
     height: 60px;
@@ -408,7 +408,7 @@ footer {
     float: left;
 }
 
-#id-duration {
+#id-duration-time {
     float: right;
 }
 

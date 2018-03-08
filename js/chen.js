@@ -54,7 +54,7 @@ var findAll = function(element, selector) {
 }
 
 // 初始化自定义属性
-var initCustomProps = function(element, props, type) {
+var initCustomProps = function(element, props) {
     if (element.props === undefined) {
         element.props = null
     }

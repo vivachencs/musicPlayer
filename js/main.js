@@ -27,25 +27,29 @@ var rotateCD = function() {
     }, 20)
 }
 
-
 var play = function() {
-    log('play')
     playStatus = true
     var down = e('#id-down')
-    var downTrans = 'translateX(-50%) rotateZ(-50deg)'
-    log('down', down)
     var player = e('#id-audio-player')
-    var delay = 400
     var playButton = e('#id-img-play')
-    playButton.src = 'img/stop2.png'
-    initCustomProps(player, 'playTimeout')
+
+    var downTrans = 'translateX(-50%) rotateZ(-50deg)'
+    var delay = 400
+
     down.style.transform = downTrans
+    initCustomProps(player, 'playTimeout')
+    playButton.src = 'img/stop2.png'
+
     setTimeout(rotateCD, delay)
     player.playTimeout = setTimeout(playMusic, delay)
+
+    // 绑定进度条事件
+    // bindEventPlayProgress()
+    // 显示时间
+    showTime()
 }
 
 var stop = function() {
-    log('stop')
     playStatus = false
     var cd = e('#id-rotate-cd')
     var down = e('#id-down')
@@ -68,6 +72,36 @@ var resetCD = function() {
     cd.style.transform = style
 }
 
+var time = function(t) {
+    var sec = Math.floor(t % 60)
+    var min = Math.floor(t / 60)
+    if (sec < 10) {
+        sec = '0' + sec
+    }
+    if (min < 10) {
+        min = '0' + min
+    }
+    return `${min}:${sec}`
+}
+
+var showTime = function() {
+    var player = e('#id-audio-player')
+    var currentTimeSpan = e('#id-current-time')
+    var durationTimeSpan = e('#id-duration-time')
+
+    initCustomProps(player, 'show')
+    clearInterval(player.show)
+    player.show = setInterval(function(){
+        var durationTime = player.duration
+        var currentTime = player.currentTime
+        if (durationTime != '' && currentTime != '') {
+            currentTimeSpan.innerHTML = time(currentTime)
+            durationTimeSpan.innerHTML = time(durationTime)
+        }
+        // showProgrss()
+    }, 100)
+}
+
 // 绑定播放事件
 var bindEventPlay = function() {
     var pre = e('#id-img-pre')
@@ -82,10 +116,6 @@ var bindEventPlay = function() {
             stop()
         }
     })
-}
-
-var cutPlay = function(music, n) {
-
 }
 
 // 绑定换页事件
@@ -111,6 +141,14 @@ var bindEventPage = function() {
         preButton.style.opacity = '1'
         nextButton.style.opacity = '0'
         scrollTo(0, 0)
+    })
+}
+
+var bindEventPlayPattern = function() {
+    var musicOrder = e('#id-music-order')
+    bindEvent(musicOrder, 'click', function(){
+        var basePath = 'img/'
+
     })
 }
 
